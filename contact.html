@@ -91,8 +91,9 @@
                     </div>
                 </div>
 
-                <form method="post" class="contact-form">
+                <form id="contact-form" class="contact-form">
                     <div class="form-group form-group-name">
+                      <input type="hidden" name="contact_number">
                       <label for="name" class="sr-only">Name</label>
                       <input type="text" name="name" id="name" class="form-control" placeholder="NAME">
                     </div>
@@ -104,7 +105,7 @@
                         <label for="message" class="sr-only">Message</label>
                         <textarea name="message" id="message" class="form-control" placeholder="MESSAGE" rows="5"></textarea>
                     </div>
-                    <button onclick="sendEmail();" type="submit" class="btn btn-primary form-submit-btn">SEND MESSAGE</button>
+                    <button type="submit" class="btn btn-primary form-submit-btn">SEND MESSAGE</button>
                 </form>
 
             </section>
@@ -124,46 +125,27 @@
     <script src="assets/vendors/entry/jq.entry.min.js"></script>
     <script src="assets/js/live-resume.js"></script>
 </body>
-<script>
-    function sendEmail() {
-  // Get the form data
-  var name = document.getElementById("name").value;
-  var email = document.getElementById("email").value;
-  var message = document.getElementById("message").value;
-
-  // Validate the form data
-  if (name == "") {
-    alert("Please enter your name.");
-    return;
-  }
-
-  if (!isEmail(email)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-  if (message == "") {
-    alert("Please enter your message.");
-    return;
-  }
-
-  // Send the email
-  var emailjs = require("emailjs");
-  emailjs.sendForm("iIHAbaUJ7cEU-_Mdy", "contact_form", {
-    name: name,
-    email: email,
-    message: message
-  });
-}
-
-// Add an event listener to the submit button
-document.getElementById("contact-form").addEventListener("submit", sendEmail);
-
-// Function to validate email address
-function isEmail(email) {
-  var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  return regex.test(email);
-}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs@4.0.3/email.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // https://dashboard.emailjs.com/admin/account
+            emailjs.init('iIHAbaUJ7cEU-_Mdy');
+        })();
+    </script>
+    <script type="text/javascript">
+        window.onload = function() {
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                // generate a five digit number for the contact_number variable
+                this.contact_number.value = Math.random() * 100000 | 0;
+                // these IDs from the previous steps
+                emailjs.sendForm('contact_service', 'contact_form', this)
+                    .then(function() {
+                        console.log('SUCCESS!');
+                    }, function(error) {
+                        console.log('FAILED...', error);
+                    });
+            });
+        }
+    </script>
 </html>
